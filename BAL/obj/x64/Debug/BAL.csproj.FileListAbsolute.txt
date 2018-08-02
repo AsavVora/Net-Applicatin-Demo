@@ -1,0 +1,6 @@
+E:\Chirag\PMS\PMS\BAL\bin\x64\Debug\BAL.dll
+E:\Chirag\PMS\PMS\BAL\bin\x64\Debug\BAL.pdb
+E:\Chirag\PMS\PMS\BAL\bin\x64\Debug\MySql.Data.dll
+E:\Chirag\PMS\PMS\BAL\obj\x64\Debug\BAL.csprojResolveAssemblyReference.cache
+E:\Chirag\PMS\PMS\BAL\obj\x64\Debug\BAL.dll
+E:\Chirag\PMS\PMS\BAL\obj\x64\Debug\BAL.pdb

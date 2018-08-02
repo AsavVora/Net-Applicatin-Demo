@@ -1,0 +1,493 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MainSite.master.cs" Inherits="PMS.MainSite" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <meta charset="utf-8" />
+    <title>Project Management System</title>
+    <meta name="description" content="AppUI is a Web App Bootstrap Admin Template created by pixelcave and published on Themeforest. This is the demo of AppUI! You need to purchase a license for legal use!" />
+    <meta name="author" content="pixelcave" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0" />
+    <link rel="shortcut icon" href="img/favicon.png" />
+    <link rel="apple-touch-icon" href="img/icon57.png" sizes="57x57" />
+    <link rel="apple-touch-icon" href="img/icon72.png" sizes="72x72" />
+    <link rel="apple-touch-icon" href="img/icon76.png" sizes="76x76" />
+    <link rel="apple-touch-icon" href="img/icon114.png" sizes="114x114" />
+    <link rel="apple-touch-icon" href="img/icon120.png" sizes="120x120" />
+    <link rel="apple-touch-icon" href="img/icon144.png" sizes="144x144" />
+    <link rel="apple-touch-icon" href="img/icon152.png" sizes="152x152" />
+    <link rel="apple-touch-icon" href="img/icon180.png" sizes="180x180" />
+    <link rel="stylesheet" href="css/bootstrap.min-2.1.css" />
+    <link rel="stylesheet" href="css/plugins-2.1.css" />
+    <link rel="stylesheet" href="css/main-2.1.css" />
+    <link rel="stylesheet" href="css/themes-2.1.css" />
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script>        //!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-2.1.1.min.js"%3E%3C/script%3E'));</script>
+    <script src="js/vendor/bootstrap.min-2.1.js"></script>
+    <script src="js/plugins/FileUpload/jquery.uploadfile.js"></script>
+    <link href="js/plugins/FileUpload/uploadfile.css" rel="stylesheet" />
+    <script src="js/plugins/form-helper/bootstrap-formhelpers.js"></script>
+    <script src="js/plugins/form-helper/bootstrap-formhelpers-countries.js"></script>
+    <script src="js/app-2.1.js"></script>
+    <script src="js/pages/readyDashboard.js"></script>
+    <script src="js/jquery.maskedinput.min.js"></script>
+    <script src="js/plugins-2.1.js"></script>
+    <script src="js/pages/formsWizard.js"></script>
+    <script>$(function () { FormsWizard.init(); });</script>
+    <!-- Add fancyBox main JS and CSS files -->
+    <script src="js/plugins/FancyBox/jquery.fancybox.js?v=2.1.5"></script>
+    <link href="js/plugins/FancyBox/jquery.fancybox.css?v=2.1.5" rel="stylesheet" />
+
+    <style>
+        #map-canvas {
+            height: 220px;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .pac-container {
+            z-index: 9999999 !important;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+    <script>
+        $(document).ready(function (e) {
+            debugger;
+            App.datatables();
+            $('.fancybox').fancybox({
+                'fitToView': true,
+                'transitionIn': 'none', // this option is for v1.3.4
+                'transitionOut': 'none',
+                closeOpacity: true,
+                helpers: {
+                    overlay: {
+                        css: {
+                            'background-color': 'transparent'
+                        }
+                    }
+                },
+                width: '80%',
+                minHeight: '500'
+
+            });
+            $.fancybox.hideLoading();
+
+            $('.mask_phone').focus(function () {
+                $(this).unmask();
+            });
+
+            $('.mask_phone').blur(function () {
+                if ($(this).val().length == "7") {
+                    $(this).mask("() 999-9999");
+                }
+                else if ($(this).val().length == "10") {
+                    $(this).mask("(999) 999-9999");
+                }
+                else {
+                    $(this).mask("(999) 999-9999");
+                    $(this).unmask();
+                }
+            })
+
+            var x = $.cookie('IsFirstTime');
+            if (x == 1) {
+                $('#btnsetting').click();
+                $.cookie('IsFirstTime', 0, { expires: 1 });
+            }
+
+            var ImageName = "<%= HttpContext.Current.Request.Cookies["UserImage"].Value.ToString()%>";
+
+            if (ImageName != "" && ImageName != null) {
+                $('#hdnimgFileMasterPage').val(ImageName);
+                var x = "<img src='savedimages/" + ImageName + "' style='width: 100px;height: 120px;'></img>"
+                $('#imagedivMasterPage')[0].innerHTML = x;
+            }
+            else {
+                $('#hdnimgFileMasterPage').val("NoImage.png");
+                var x = "<img src='savedimages/NoImage.png' style='width: 100px;height: 120px;'></img>"
+                $('#imagedivMasterPage')[0].innerHTML = x;
+            }
+
+        });
+    </script>
+    <%--   <script type="text/javascript">
+        $(document).ajaxStart(function () {
+            debugger;
+            var a = $("#page-wrapper");
+            a.addClass("page-loading");
+        });
+
+        $(document).ajaxStop(function () {
+            debugger;
+            var a = $("#page-wrapper");
+            a.removeClass("page-loading");
+        });
+    </script>--%>
+    <script type="text/javascript">
+        $(document).ajaxStart(function () {
+            //  $("#loading").show();
+        });
+
+        $(document).ajaxStop(function () {
+            /// $("#loading").hide();
+        });
+    </script>
+    <script>
+        function ChangeImageNowDataIsSaved() {
+            debugger;
+            $('#<%= userimage.ClientID%>').prop("src", "savedimages/" + $('#hdnimgFileMasterPage').val());
+        }
+    </script>
+    <style type="text/css">
+        .text-muted {
+            position: relative;
+        }
+
+        div.ajax-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999999;
+            background-color: black;
+            opacity: 0.7;
+            filter: alpha(opacity=70); /* ie */
+            -moz-opacity: 0.7; /* mozilla */
+            display: none;
+        }
+
+            div.ajax-loading * {
+                background-color: black;
+                background-position: center center;
+                background-repeat: no-repeat;
+                opacity: 1;
+                filter: alpha(opacity=100); /* ie */
+                -moz-opacity: 1; /* mozilla */
+            }
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+
+    <input type="hidden" id="hdnPhoneCode" value="<%=HttpContext.Current.Request.Cookies["PhoneCode"].Value %>" />
+    <form id="form1" runat="server">
+
+        <div id="page-wrapper" class="">
+            <%--  <div class="preloader" id="loading">
+                <div class="inner">
+                    <div class="preloader-spinner themed-background hidden-lt-ie10"></div>
+                    <h3 class="text-primary visible-lt-ie10"><strong>Loading..</strong></h3>
+                </div>
+            </div>--%>
+            <div id="loading" class="ajax-loading" style="height: 100%; width: 100%; vertical-align: middle; text-align: center">
+                <img src="img/301.gif" style="margin-top: 25%" alt="Loading please wait......" />
+            </div>
+            <div id="page-container" class="header-fixed-top sidebar-visible-lg-full enable-cookies">
+                <div id="sidebar-alt" tabindex="-1" aria-hidden="true">
+                    <a href="javascript:void(0)" id="sidebar-alt-close" onclick="App.sidebar('toggle-sidebar-alt');"><i class="fa fa-times"></i></a>
+                    <div id="sidebar-scroll-alt">
+                        <div class="sidebar-content">
+                            <div class="sidebar-section">
+                                <h2 class="text-light">Profile</h2>
+                                <form></form>
+                                <form class="form-control-borderless form-validation" id="frmPassword">
+                                    <div class="form-group">
+                                        <input type="hidden" id="hdnMasterPageLink" value="<%=HttpContext.Current.Request.Cookies["UserId"].Value %>" />
+                                        <label for="side-profile-name">Name</label>
+                                        <input type="text" id="txtSideUserName" data-rule-required="true" name="val-username" class="form-control" value="<%=HttpContext.Current.Request.Cookies["FirstName"].Value %>" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="side-profile-email">Email</label>
+                                        <input type="email" id="txtSideEmail" data-rule-required="true" data-rule-email="true" name="val-email" class="form-control" value="<%=HttpContext.Current.Request.Cookies["Email"].Value %>" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="side-profile-password">New Password</label>
+                                        <input type="password" id="txtSidePassword" name="val-password" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="side-profile-password-confirm">Confirm New Password</label>
+                                        <input type="password" id="txtSidePasswordConfirm" data-rule-equalsto="input[name=side-profile-password]" name="val-confirm-password" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            Image</label>
+                                        <div class="col-sm-7">
+                                            <input type="hidden" id="hdnimgFileMasterPage" />
+                                            <div class="fileupload-preview thumbnail" id="imagedivMasterPage" style="width: 110px; height: 130px;">
+                                            </div>
+                                            <div id="mulitplefileuploaderMasterPage">
+                                                Upload
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group remove-margin">
+                                        <button type="submit" class="btn btn-effect-ripple btn-primary" onclick="">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="sidebar-section">
+                                <h2 class="text-light">Settings</h2>
+
+                                <ul class="sidebar-themes clearfix">
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-default" data-toggle="tooltip" title="Default" data-theme="default" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-default"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-classy" data-toggle="tooltip" title="Classy" data-theme="css/themes/classy-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-classy"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-social" data-toggle="tooltip" title="Social" data-theme="css/themes/social-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-social"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-flat" data-toggle="tooltip" title="Flat" data-theme="css/themes/flat-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-flat"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-amethyst" data-toggle="tooltip" title="Amethyst" data-theme="css/themes/amethyst-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-amethyst"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-creme" data-toggle="tooltip" title="Creme" data-theme="css/themes/creme-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-creme"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-passion" data-toggle="tooltip" title="Passion" data-theme="css/themes/passion-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="">
+                                            <span class="section-side themed-background-dark-passion"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-default" data-toggle="tooltip" title="Default + Light Sidebar" data-theme="default" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-classy" data-toggle="tooltip" title="Classy + Light Sidebar" data-theme="css/themes/classy-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-social" data-toggle="tooltip" title="Social + Light Sidebar" data-theme="css/themes/social-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-flat" data-toggle="tooltip" title="Flat + Light Sidebar" data-theme="css/themes/flat-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-amethyst" data-toggle="tooltip" title="Amethyst + Light Sidebar" data-theme="css/themes/amethyst-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-creme" data-toggle="tooltip" title="Creme + Light Sidebar" data-theme="css/themes/creme-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-passion" data-toggle="tooltip" title="Passion + Light Sidebar" data-theme="css/themes/passion-2.0.css" data-theme-navbar="navbar-inverse" data-theme-sidebar="sidebar-light">
+                                            <span class="section-side"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-default" data-toggle="tooltip" title="Default + Light Header" data-theme="default" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-default"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-classy" data-toggle="tooltip" title="Classy + Light Header" data-theme="css/themes/classy-2.0.css" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-classy"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-social" data-toggle="tooltip" title="Social + Light Header" data-theme="css/themes/social-2.0.css" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-social"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-flat" data-toggle="tooltip" title="Flat + Light Header" data-theme="css/themes/flat-2.0.css" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-flat"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-amethyst" data-toggle="tooltip" title="Amethyst + Light Header" data-theme="css/themes/amethyst-2.0.css" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-amethyst"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-creme" data-toggle="tooltip" title="Creme + Light Header" data-theme="css/themes/creme-2.0.css" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-creme"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0)" class="themed-background-passion" data-toggle="tooltip" title="Passion + Light Header" data-theme="css/themes/passion-2.0.css" data-theme-navbar="navbar-default" data-theme-sidebar="">
+                                            <span class="section-header"></span>
+                                            <span class="section-side themed-background-dark-passion"></span>
+                                            <span class="section-content"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sidebar">
+                    <div id="sidebar-brand" class="themed-background">
+                        <a href="Dashboard.aspx" class="sidebar-title">
+                            <img src="img/Logo - Full.png" style="width: 80%" />
+                        </a>
+                    </div>
+                    <div id="sidebar-scroll">
+                        <div class="sidebar-content">
+                            <div id="leftSidebarDiv" runat="server">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sidebar-extra-info" class="sidebar-content sidebar-nav-mini-hide">
+                        <div class="text-center">
+                            <small>Crafted with <i class="fa fa-heart text-danger"></i>by <a href="#" target="_blank">PMS</a></small><br>
+                            <small><span id="year-copy"></span>&copy; <a href="#" target="_blank">PMS</a></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="main-container">
+
+                    <header class="navbar navbar-inverse navbar-fixed-top">
+                        <div id="SideBarDiv" runat="server">
+                        </div>
+                        <ul class="nav navbar-nav-custom pull-right">
+                            <li>
+                                <a href="javascript:void(0)" id="btnsetting" onclick="App.sidebar('toggle-sidebar-alt');">
+                                    <i class="gi gi-settings"></i>
+                                </a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                                    <img src="img/placeholders/avatars/avatar9.jpg" alt="avatar" runat="server" id="userimage">
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li>
+                                        <a href="login.aspx">
+                                            <i class="fa fa-power-off fa-fw pull-right"></i>
+                                            Log out
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </header>
+                    <div id="page-content">
+                        <a class="fancybox fancybox.iframe" href="iframe.html" id="iframeProject" style="display: none">Iframe</a>
+                        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                        </asp:ContentPlaceHolder>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <a class="btn btn-primary" id="btnYesNo" style="display: none" data-toggle="modal" href="#YesNoMsg">Launch Modal</a>
+
+    <div id="YesNoMsg" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title"><strong>Attention</strong></h3>
+                </div>
+                <div class="modal-body" id="YesNoBody">
+                </div>
+                <div class="modal-footer">
+                    <button id="Button1" type="button" class="btn btn-danger" data-dismiss="modal" onclick="DeleteRecord2(hdnTagName.value)">Yes</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary" id="btnYesNo2" style="display: none" data-toggle="modal" href="#YesNoMsg2">Launch Modal</a>
+    <div id="YesNoMsg2" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title"><strong>Attention</strong></h3>
+                </div>
+                <input type="hidden" id="hdnTagName" />
+                <div class="modal-body" id="YesNoBody2">
+                </div>
+                <div class="modal-footer">
+                    <button id="btnConfirmYes2" type="button" class="btn btn-danger" data-dismiss="modal" onclick="DeleteRecord2(hdnTagName.value)">Yes</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary" id="btnProjectmdl" style="display: none" data-toggle="modal" href="#mdlProject">Launch Modal</a>
+    <div id="mdlProject" class="modal primary fade" aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1">
+        <div class="modal-dialog" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" id="btnProjectClose" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title"><strong id="myModalLabel"></strong></h3>
+                </div>
+                <div class="modal-body" style="height: 100%">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" id="btnCancelCustomer" data-dismiss="modal" aria-hidden="true">
+                        Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script src="ExtJS/CommonJS.js"></script>
+</html>
